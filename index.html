@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +62,14 @@
   }
   .note strong { color: var(--accent); font-weight: 500; }
 
+  .confidential {
+    font-size: 12px; color: var(--text-tertiary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius); padding: 0.875rem 1rem;
+    line-height: 1.7; margin-bottom: 1.25rem;
+    font-style: italic;
+  }
+
   textarea, input[type=text], input[type=password] {
     width: 100%; padding: 0.875rem 1rem; font-size: 15px;
     font-family: var(--font); line-height: 1.7;
@@ -96,6 +105,9 @@
 
   .row { display: flex; justify-content: flex-end; margin-top: 1rem; }
   .row-split { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+
+  .input-row { display: flex; gap: 8px; margin-top: 1rem; }
+  .input-row input { flex: 1; }
 
   .context-bar {
     background: var(--accent-light); border: 0.5px solid rgba(45,90,61,0.15);
@@ -154,6 +166,8 @@
   .actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
   .error { background: #FEF2F2; border: 0.5px solid #FECACA; border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 13px; color: #991B1B; line-height: 1.6; }
+
+  .pw-error { font-size: 13px; color: #991B1B; margin-top: 0.5rem; display: none; }
 </style>
 </head>
 <body>
@@ -167,7 +181,24 @@
     <div class="header-badge">Dressler Advisory</div>
   </div>
 
-  <div id="welcomeScreen" class="screen active">
+  <!-- SCREEN 0: PASSWORD -->
+  <div id="passwordScreen" class="screen active">
+    <div class="card">
+      <h2>Welcome to Rodin</h2>
+      <p class="desc">Rodin is a private thinking partner for clients of David Dressler. Please enter your access code to continue.</p>
+      <div class="confidential">
+        This tool is for the exclusive use of David Dressler's clients. Please do not share this link, your access code, or any details of this tool with others without David's prior consent.
+      </div>
+      <div class="input-row">
+        <input type="password" id="passwordInput" placeholder="Enter access code" autocomplete="off" />
+        <button class="btn btn-primary" onclick="submitPassword()">Enter ↗</button>
+      </div>
+      <div class="pw-error" id="pwError">Incorrect access code. Please try again.</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 1: WELCOME -->
+  <div id="welcomeScreen" class="screen">
     <div class="card">
       <h2>Before your session with David</h2>
       <p class="desc">Rodin is a private thinking partner. It will ask you questions, push you to go deeper than you normally would on your own, and help you arrive at your session with more clarity about what you're actually working on.</p>
@@ -180,6 +211,7 @@
     </div>
   </div>
 
+  <!-- SCREEN 2: TOPIC -->
   <div id="topicScreen" class="screen">
     <div class="card">
       <h2>What's on your mind?</h2>
@@ -193,11 +225,12 @@
       </div>
       <textarea id="topicInput" placeholder="Write as much or as little as feels right. This is just for you." rows="5"></textarea>
       <div class="row">
-        <button class="btn btn-primary" id="topicBtn" onclick="startConversation()">Let's go ↗</button>
+        <button class="btn btn-primary" onclick="startConversation()">Let's go ↗</button>
       </div>
     </div>
   </div>
 
+  <!-- SCREEN 3: CHAT -->
   <div id="chatScreen" class="screen">
     <div class="context-bar" id="contextBar"></div>
     <div class="messages" id="messages"></div>
@@ -214,6 +247,7 @@
     <div id="chatError" style="display:none;margin-top:1rem;"></div>
   </div>
 
+  <!-- SCREEN 4: SYNTHESIS -->
   <div id="synthScreen" class="screen">
     <div class="synth-intro">
       <h2>What came up for you.</h2>
@@ -229,7 +263,7 @@
       <div class="focus-q" id="focusQ"></div>
     </div>
     <div class="copy-note">
-      <strong>Before you close this tab:</strong> This summary only exists here — the moment you close it, it's gone. Do two things now: (1) click "Copy summary to clipboard" and paste it into an email to David at david@daviddressler.co ahead of your session, and (2) paste a copy into a doc or note for yourself to reference during the call.
+      <strong>Before you close this tab:</strong> This summary only exists here — the moment you close it, it's gone. Do two things now: (1) click "Copy summary to clipboard" and paste it into an email to David at david@ddressler.com ahead of your session, and (2) paste a copy into a doc or note for yourself to reference during the call.
     </div>
     <div class="actions">
       <button class="btn btn-primary" onclick="copyAll()">Copy summary to clipboard</button>
@@ -241,6 +275,8 @@
 </div>
 
 <script>
+const PASSWORD = 'Auguste';
+
 const SYSTEM_PROMPT = `You are Rodin — a private thinking partner built for executive coaching prep work by David Dressler of Dressler Advisory.
 
 Your job is to help the client get their thoughts out, go deeper than they'd normally go on their own, and arrive at their coaching session with more clarity about what they're actually working on.
@@ -283,6 +319,18 @@ Never tell them what to do. Never recommend a course of action. You are helping 
 
 let history = [];
 let exchangeCount = 0;
+
+function submitPassword() {
+  const input = document.getElementById('passwordInput');
+  const errEl = document.getElementById('pwError');
+  if (input.value.trim() === PASSWORD) {
+    showScreen('welcomeScreen');
+  } else {
+    errEl.style.display = 'block';
+    input.value = '';
+    input.focus();
+  }
+}
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -479,6 +527,10 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
     if (document.getElementById('chatScreen').classList.contains('active')) sendMessage();
   }
+});
+
+document.getElementById('passwordInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitPassword();
 });
 
 document.getElementById('topicInput').addEventListener('input', function() {

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rodin — Pre-Session Thinking Partner</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: rgba(0,0,0,0.09);
+    --border-mid: rgba(0,0,0,0.14);
+    --text-primary: #1A1A18;
+    --text-secondary: #5C5C58;
+    --text-tertiary: #9C9C96;
+    --accent: #2D5A3D;
+    --accent-light: #EDF3EF;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 5rem;
+  }
+
+  #shell { width: 100%; max-width: 680px; }
+
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2.5rem; padding-bottom: 1.25rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .header-logo { font-size: 22px; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; }
+  .header-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+  .header-badge { font-size: 11px; color: var(--accent); background: var(--accent-light); padding: 4px 12px; border-radius: 20px; letter-spacing: 0.02em; }
+
+  .screen { display: none; flex-direction: column; gap: 1.5rem; }
+  .screen.active { display: flex; }
+
+  .card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 2rem;
+  }
+  .card h2 { font-size: 20px; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.3; }
+  .card .desc { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 1.25rem; }
+
+  .note {
+    font-size: 13px; color: var(--text-secondary);
+    background: var(--accent-light); border-radius: var(--radius);
+    padding: 0.75rem 1rem; line-height: 1.65; margin-bottom: 1.25rem;
+  }
+  .note strong { color: var(--accent); font-weight: 500; }
+
+  textarea, input[type=text], input[type=password] {
+    width: 100%; padding: 0.875rem 1rem; font-size: 15px;
+    font-family: var(--font); line-height: 1.7;
+    color: var(--text-primary); background: var(--bg);
+    border: 0.5px solid var(--border-mid); border-radius: var(--radius);
+    outline: none; resize: none;
+  }
+  textarea { min-height: 120px; }
+  textarea:focus, input:focus { border-color: var(--accent); }
+  textarea::placeholder, input::placeholder { color: var(--text-tertiary); }
+
+  .btn {
+    padding: 10px 22px; font-size: 14px; font-family: var(--font);
+    border-radius: var(--radius); cursor: pointer;
+    border: 0.5px solid var(--border-mid);
+    background: transparent; color: var(--text-primary);
+    transition: background 0.15s, opacity 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover:not(:disabled) { background: var(--accent-light); }
+  .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover:not(:disabled) { opacity: 0.88; background: var(--accent); }
+
+  .hints { display: flex; flex-direction: column; gap: 7px; margin-bottom: 1.25rem; }
+  .hint {
+    font-size: 13px; color: var(--text-secondary);
+    padding: 0.5rem 0.875rem; border-left: 2px solid var(--border-mid);
+    line-height: 1.5; cursor: pointer; transition: border-color 0.15s, color 0.15s;
+  }
+  .hint:hover { border-color: var(--accent); color: var(--text-primary); }
+
+  .row { display: flex; justify-content: flex-end; margin-top: 1rem; }
+  .row-split { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+
+  .context-bar {
+    background: var(--accent-light); border: 0.5px solid rgba(45,90,61,0.15);
+    border-radius: var(--radius); padding: 0.65rem 1rem;
+    font-size: 13px; color: var(--accent); line-height: 1.5;
+  }
+  .context-bar strong { font-weight: 500; }
+
+  .messages { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem; min-height: 100px; }
+
+  .msg { display: flex; flex-direction: column; gap: 4px; }
+  .msg-label { font-size: 11px; color: var(--text-tertiary); padding: 0 2px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .msg.user .msg-label { text-align: right; }
+  .bubble { font-size: 15px; line-height: 1.75; white-space: pre-wrap; padding: 0.9rem 1.1rem; border-radius: var(--radius-lg); }
+  .msg.ai .bubble { background: var(--surface); border: 0.5px solid var(--border); border-radius: 2px var(--radius-lg) var(--radius-lg) var(--radius-lg); max-width: 95%; }
+  .msg.user .bubble { background: var(--accent); color: #fff; border-radius: var(--radius-lg) var(--radius-lg) 2px var(--radius-lg); align-self: flex-end; max-width: 88%; }
+
+  .typing-wrap { display: flex; flex-direction: column; gap: 4px; }
+  .typing-label { font-size: 11px; color: var(--text-tertiary); letter-spacing: 0.04em; text-transform: uppercase; }
+  .typing-dots { display: flex; gap: 5px; align-items: center; background: var(--surface); border: 0.5px solid var(--border); padding: 1rem 1.1rem; border-radius: 2px var(--radius-lg) var(--radius-lg) var(--radius-lg); width: fit-content; }
+  .typing-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--text-tertiary); animation: pulse 1.2s infinite; }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+
+  .input-area {
+    background: var(--surface); border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-lg); padding: 1rem;
+    display: flex; flex-direction: column; gap: 10px;
+    position: sticky; bottom: 1.5rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+  }
+  .input-area textarea { min-height: 64px; }
+  .input-hint { font-size: 12px; color: var(--text-tertiary); }
+
+  .synth-intro h2 { font-size: 20px; font-weight: 500; margin-bottom: 0.4rem; }
+  .synth-intro p { font-size: 14px; color: var(--text-secondary); line-height: 1.75; }
+
+  .synth-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .syn-sec { padding: 1.35rem 1.5rem; }
+  .syn-sec + .syn-sec { border-top: 0.5px solid var(--border); }
+  .syn-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 0.6rem; }
+  .syn-text { font-size: 15px; line-height: 1.8; color: var(--text-primary); white-space: pre-wrap; }
+
+  .focus-card { background: var(--accent-light); border: 0.5px solid rgba(45,90,61,0.2); border-radius: var(--radius-lg); padding: 1.35rem 1.5rem; }
+  .focus-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.6rem; }
+  .focus-q { font-size: 18px; font-weight: 500; color: var(--text-primary); line-height: 1.5; }
+
+  .copy-note {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius); padding: 1rem 1.25rem;
+    font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+  }
+  .copy-note strong { color: var(--text-primary); font-weight: 500; }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .error { background: #FEF2F2; border: 0.5px solid #FECACA; border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 13px; color: #991B1B; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <div class="header">
+    <div>
+      <div class="header-logo">Rodin</div>
+      <div class="header-sub">Pre-session thinking partner</div>
+    </div>
+    <div class="header-badge">Dressler Advisory</div>
+  </div>
+
+  <div id="welcomeScreen" class="screen active">
+    <div class="card">
+      <h2>Before your session with David</h2>
+      <p class="desc">Rodin is a private thinking partner. It will ask you questions, push you to go deeper than you normally would on your own, and help you arrive at your session with more clarity about what you're actually working on.</p>
+      <div class="note">
+        <strong>This conversation is just for you.</strong> It's transparent pre-work — David knows you've used it and will see a summary if you choose to share one. Nothing is stored anywhere. When you close this tab, the conversation is gone.
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" onclick="showScreen('topicScreen')">Get started ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="topicScreen" class="screen">
+    <div class="card">
+      <h2>What's on your mind?</h2>
+      <p class="desc">Start wherever you are. You don't need a polished question — just the thing that's been taking up space. Rodin will help you figure out what's actually underneath it.</p>
+      <div class="hints">
+        <div class="hint" onclick="setTopic(this)">A decision I'm sitting with and can't seem to resolve</div>
+        <div class="hint" onclick="setTopic(this)">A tension or conflict I haven't fully worked through</div>
+        <div class="hint" onclick="setTopic(this)">Something that's been draining my energy</div>
+        <div class="hint" onclick="setTopic(this)">A goal that keeps not happening</div>
+        <div class="hint" onclick="setTopic(this)">A relationship that needs something different from me</div>
+      </div>
+      <textarea id="topicInput" placeholder="Write as much or as little as feels right. This is just for you." rows="5"></textarea>
+      <div class="row">
+        <button class="btn btn-primary" id="topicBtn" onclick="startConversation()">Let's go ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="chatScreen" class="screen">
+    <div class="context-bar" id="contextBar"></div>
+    <div class="messages" id="messages"></div>
+    <div class="input-area">
+      <textarea id="chatInput" placeholder="Write here... Cmd+Enter to send." rows="3"></textarea>
+      <div class="row-split">
+        <span class="input-hint" id="exchangeHint"></span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" onclick="requestSynthesis()">I'm ready to wrap up</button>
+          <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">Send ↗</button>
+        </div>
+      </div>
+    </div>
+    <div id="chatError" style="display:none;margin-top:1rem;"></div>
+  </div>
+
+  <div id="synthScreen" class="screen">
+    <div class="synth-intro">
+      <h2>What came up for you.</h2>
+      <p>A reflection of what you explored — not a recommendation, not a verdict. Read it before your session.</p>
+    </div>
+    <div class="synth-card" id="synthCard">
+      <div class="syn-sec">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    <div class="focus-card" id="focusCard" style="display:none;">
+      <div class="focus-label">The question to bring to your session</div>
+      <div class="focus-q" id="focusQ"></div>
+    </div>
+    <div class="copy-note">
+      <strong>Before you close this tab:</strong> This summary only exists here — it won't be saved anywhere. To keep it, click "Copy summary to clipboard" below, then paste it into an email or doc. Send it to David ahead of your session, or just bring it with you.
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="copyAll()">Copy summary to clipboard</button>
+      <button class="btn" onclick="startOver()">Start a new session</button>
+    </div>
+    <div id="synthError" style="display:none;margin-top:1rem;"></div>
+  </div>
+
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are Rodin — a private thinking partner built for executive coaching prep work by David Dressler of Dressler Advisory.
+
+Your job is to help the client get their thoughts out, go deeper than they'd normally go on their own, and arrive at their coaching session with more clarity about what they're actually working on.
+
+This conversation is transparent pre-work. The client knows it's preparation for their session with David. A summary will be generated at the end that they can share with David if they choose.
+
+Your operating principles:
+
+PROBE, DON'T ACCEPT SURFACE ANSWERS. When someone says "I want clarity" or "I'm feeling stuck" or "I want to grow" — don't move on. Ask what's underneath. What specifically? What have they tried? What's getting in the way? What does that actually mean for them?
+
+FOLLOW THE ENERGY. Pay attention to what lights up in their writing — a phrase they repeat, a detail that seems charged, something they mention and then move away from quickly. Name it. Go there.
+
+ASK ONE QUESTION AT A TIME. Never ask multiple questions in a single response. Pick the most important one. Let them answer fully before moving on.
+
+BE WARM BUT RELENTLESS. You are not a therapist. You are a sharp, curious thinking partner who genuinely wants to help them get somewhere useful. You are not soft. You don't let people off the hook. But you are also not cold — you are genuinely interested in them as a person, not just their problem.
+
+GO UNDERNEATH THE STATED PROBLEM. Most people arrive with the presenting problem, not the real one. The stated issue is often a proxy for something bigger — an identity question, a fear they haven't named, a values conflict they're avoiding. Help them find it.
+
+USE THEIR OWN WORDS. When you reflect back what you heard, use their language. Don't translate into coaching jargon.
+
+KEEP RESPONSES TIGHT. 2-4 sentences maximum per turn, then one question. No monologues. No lists. No headers. Just direct, warm, curious conversation.
+
+AFTER 6-8 EXCHANGES, START LANDING. When you sense they've found something real, help them articulate it.
+
+WHEN ASKED FOR SYNTHESIS, write exactly four sections with these headers on their own lines:
+
+WHAT I HEARD
+A plain-language reflection of what they explored — the real topic underneath the stated one, the key things they said, what seemed to matter most. Written in second person. Specific, not generic. Use their actual words where you can.
+
+WHAT I NOTICED
+Patterns across the conversation — things they returned to, things they avoided, places where the energy changed, tensions between what they said they want and what their answers pointed to. Honest. Not harsh, but not soft either.
+
+DIFFERENT WAYS TO LOOK AT THIS
+Two or three genuine alternative perspectives on their situation. Not platitudes — actually different framings that could open something up for them.
+
+THE QUESTION TO BRING TO YOUR SESSION
+One sentence only. The most useful, specific, generative question they could walk into their coaching session ready to answer. Not a summary of their problem — a question that will move things forward.
+
+Never tell them what to do. Never recommend a course of action. You are helping them think, not thinking for them.`;
+
+let history = [];
+let exchangeCount = 0;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setTopic(el) {
+  document.getElementById('topicInput').value = el.textContent;
+}
+
+async function startConversation() {
+  const text = document.getElementById('topicInput').value.trim();
+  if (text.length < 5) return;
+  history = [];
+  exchangeCount = 0;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('chatError').style.display = 'none';
+  const short = text.length > 100 ? text.slice(0, 100) + '…' : text;
+  document.getElementById('contextBar').innerHTML = `<strong>Today's topic:</strong> ${short}`;
+  showScreen('chatScreen');
+  addMessage('user', text);
+  history.push({ role: 'user', content: text });
+  await getAIResponse();
+}
+
+function addMessage(role, text) {
+  const c = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  const lbl = document.createElement('div');
+  lbl.className = 'msg-label';
+  lbl.textContent = role === 'ai' ? 'rodin' : 'you';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  wrap.appendChild(lbl);
+  wrap.appendChild(bubble);
+  c.appendChild(wrap);
+  bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showTyping() {
+  const c = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'typing-wrap';
+  wrap.id = 'typingEl';
+  wrap.innerHTML = `<div class="typing-label">rodin</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  c.appendChild(wrap);
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function removeTyping() { const e = document.getElementById('typingEl'); if (e) e.remove(); }
+
+function updateHint() {
+  const h = document.getElementById('exchangeHint');
+  if (exchangeCount >= 7) h.textContent = "Good depth here — wrap up whenever you're ready.";
+  else if (exchangeCount >= 4) h.textContent = "Going well — keep going or wrap up when ready.";
+  else h.textContent = '';
+}
+
+async function callProxy(messages) {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages, system: SYSTEM_PROMPT })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Error ${res.status}`);
+  }
+  const data = await res.json();
+  return data.content?.[0]?.text || '';
+}
+
+async function getAIResponse() {
+  const sendBtn = document.getElementById('sendBtn');
+  const chatInput = document.getElementById('chatInput');
+  const errEl = document.getElementById('chatError');
+  sendBtn.disabled = true;
+  chatInput.disabled = true;
+  errEl.style.display = 'none';
+  showTyping();
+  try {
+    const reply = await callProxy(history);
+    removeTyping();
+    if (!reply) throw new Error('Empty response');
+    addMessage('ai', reply);
+    history.push({ role: 'assistant', content: reply });
+    exchangeCount++;
+    updateHint();
+  } catch(e) {
+    removeTyping();
+    errEl.className = 'error';
+    errEl.textContent = 'Something went wrong: ' + e.message + '. Please try again.';
+    errEl.style.display = 'block';
+  }
+  sendBtn.disabled = false;
+  chatInput.disabled = false;
+  chatInput.focus();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || document.getElementById('sendBtn').disabled) return;
+  input.value = '';
+  input.style.height = 'auto';
+  addMessage('user', text);
+  history.push({ role: 'user', content: text });
+  await getAIResponse();
+}
+
+async function requestSynthesis() {
+  if (history.length < 2) return;
+  showScreen('synthScreen');
+  document.getElementById('focusCard').style.display = 'none';
+  document.getElementById('synthError').style.display = 'none';
+  document.getElementById('synthCard').innerHTML = `<div class="syn-sec"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  const synthMessages = [...history, {
+    role: 'user',
+    content: 'Please generate the synthesis now. Use exactly these four headers on their own lines:\n\nWHAT I HEARD\nWHAT I NOTICED\nDIFFERENT WAYS TO LOOK AT THIS\nTHE QUESTION TO BRING TO YOUR SESSION\n\nBe specific to what was actually said. Use my words. Don\'t soften what you noticed. Don\'t tell me what to do.'
+  }];
+  try {
+    const reply = await callProxy(synthMessages);
+    if (!reply) throw new Error('Empty response');
+    renderSynthesis(reply);
+  } catch(e) {
+    document.getElementById('synthCard').innerHTML = '';
+    const errEl = document.getElementById('synthError');
+    errEl.className = 'error';
+    errEl.textContent = 'Something went wrong: ' + e.message + '. Please try again.';
+    errEl.style.display = 'block';
+  }
+}
+
+function renderSynthesis(text) {
+  const headers = ['WHAT I HEARD','WHAT I NOTICED','DIFFERENT WAYS TO LOOK AT THIS','THE QUESTION TO BRING TO YOUR SESSION'];
+  const card = document.getElementById('synthCard');
+  card.innerHTML = '';
+  const sections = headers.map((h, i) => {
+    const next = headers[i+1];
+    const re = new RegExp(h.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '[:\\s\\n]+([\\s\\S]+?)' + (next ? '(?=' + next.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')' : '$'), 'i');
+    const m = text.match(re);
+    return { label: h, text: m ? m[1].trim() : '' };
+  });
+  const hasSections = sections.some(s => s.text.length > 20);
+  if (!hasSections) {
+    card.innerHTML = `<div class="syn-sec"><div class="syn-text">${text.trim()}</div></div>`;
+    return;
+  }
+  sections.slice(0,3).forEach(s => {
+    if (!s.text) return;
+    const sec = document.createElement('div');
+    sec.className = 'syn-sec';
+    sec.innerHTML = `<div class="syn-label">${s.label}</div><div class="syn-text">${s.text}</div>`;
+    card.appendChild(sec);
+  });
+  const focus = sections[3];
+  if (focus && focus.text) {
+    document.getElementById('focusQ').textContent = focus.text;
+    document.getElementById('focusCard').style.display = 'block';
+  }
+}
+
+function copyAll() {
+  const card = document.getElementById('synthCard');
+  const focus = document.getElementById('focusCard');
+  let text = '';
+  card.querySelectorAll('.syn-sec').forEach(sec => {
+    const label = sec.querySelector('.syn-label')?.textContent || '';
+    const content = sec.querySelector('.syn-text')?.textContent || '';
+    text += label + '\n' + content + '\n\n';
+  });
+  if (focus.style.display !== 'none') {
+    text += 'THE QUESTION TO BRING TO YOUR SESSION\n' + document.getElementById('focusQ').textContent;
+  }
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    const btn = document.querySelector('.actions .btn-primary');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+function startOver() {
+  history = [];
+  exchangeCount = 0;
+  document.getElementById('topicInput').value = '';
+  showScreen('topicScreen');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    if (document.getElementById('chatScreen').classList.contains('active')) sendMessage();
+  }
+});
+
+document.getElementById('topicInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.max(this.scrollHeight, 120) + 'px';
+});
+
+document.getElementById('chatInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.max(this.scrollHeight, 64) + 'px';
+});
+</script>
+</body>
+</html>

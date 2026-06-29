@@ -13,12 +13,22 @@ export default async function handler(req) {
   }
 
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
   }
 
   try {
     const body = await req.json();
     const { messages, system } = body;
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return new Response(JSON.stringify({ error: 'API key not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -37,21 +47,22 @@ export default async function handler(req) {
 
     const data = await response.json();
 
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: data.error?.message || 'Anthropic API error', status: response.status, detail: data }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    }
+
     return new Response(JSON.stringify(data), {
-      status: response.status,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: err.message || 'Unknown error' }), {
       status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   }
 }

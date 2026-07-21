@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +6,6 @@
 <title>Rodin — Pre-Session Thinking Partner</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --bg: #FAFAF8;
     --surface: #FFFFFF;
@@ -22,7 +20,6 @@
     --radius-lg: 14px;
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
-
   body {
     font-family: var(--font);
     background: var(--bg);
@@ -33,9 +30,7 @@
     align-items: center;
     padding: 2rem 1rem 5rem;
   }
-
   #shell { width: 100%; max-width: 680px; }
-
   .header {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 2.5rem; padding-bottom: 1.25rem;
@@ -44,24 +39,20 @@
   .header-logo { font-size: 22px; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; }
   .header-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
   .header-badge { font-size: 11px; color: var(--accent); background: var(--accent-light); padding: 4px 12px; border-radius: 20px; letter-spacing: 0.02em; }
-
   .screen { display: none; flex-direction: column; gap: 1.5rem; }
   .screen.active { display: flex; }
-
   .card {
     background: var(--surface); border: 0.5px solid var(--border);
     border-radius: var(--radius-lg); padding: 2rem;
   }
   .card h2 { font-size: 20px; font-weight: 500; margin-bottom: 0.5rem; line-height: 1.3; }
   .card .desc { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 1.25rem; }
-
   .note {
     font-size: 13px; color: var(--text-secondary);
     background: var(--accent-light); border-radius: var(--radius);
     padding: 0.75rem 1rem; line-height: 1.65; margin-bottom: 1.25rem;
   }
   .note strong { color: var(--accent); font-weight: 500; }
-
   .confidential {
     font-size: 12px; color: var(--text-tertiary);
     border: 0.5px solid var(--border);
@@ -69,7 +60,6 @@
     line-height: 1.7; margin-bottom: 1.25rem;
     font-style: italic;
   }
-
   textarea, input[type=text], input[type=password] {
     width: 100%; padding: 0.875rem 1rem; font-size: 15px;
     font-family: var(--font); line-height: 1.7;
@@ -80,7 +70,6 @@
   textarea { min-height: 120px; }
   textarea:focus, input:focus { border-color: var(--accent); }
   textarea::placeholder, input::placeholder { color: var(--text-tertiary); }
-
   .btn {
     padding: 10px 22px; font-size: 14px; font-family: var(--font);
     border-radius: var(--radius); cursor: pointer;
@@ -94,7 +83,6 @@
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
   .btn-primary:hover:not(:disabled) { opacity: 0.88; background: var(--accent); }
-
   .hints { display: flex; flex-direction: column; gap: 7px; margin-bottom: 1.25rem; }
   .hint {
     font-size: 13px; color: var(--text-secondary);
@@ -102,29 +90,31 @@
     line-height: 1.5; cursor: pointer; transition: border-color 0.15s, color 0.15s;
   }
   .hint:hover { border-color: var(--accent); color: var(--text-primary); }
-
+  .track-option {
+    font-size: 14px; color: var(--text-primary);
+    padding: 1rem 1.1rem; border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius); line-height: 1.6; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .track-option:hover { border-color: var(--accent); background: var(--accent-light); }
+  .track-option strong { display: block; font-size: 15px; font-weight: 500; margin-bottom: 0.2rem; }
   .row { display: flex; justify-content: flex-end; margin-top: 1rem; }
   .row-split { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
-
   .input-row { display: flex; gap: 8px; margin-top: 1rem; }
   .input-row input { flex: 1; }
-
   .context-bar {
     background: var(--accent-light); border: 0.5px solid rgba(45,90,61,0.15);
     border-radius: var(--radius); padding: 0.65rem 1rem;
     font-size: 13px; color: var(--accent); line-height: 1.5;
   }
   .context-bar strong { font-weight: 500; }
-
   .messages { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 1.5rem; min-height: 100px; }
-
   .msg { display: flex; flex-direction: column; gap: 4px; }
   .msg-label { font-size: 11px; color: var(--text-tertiary); padding: 0 2px; letter-spacing: 0.04em; text-transform: uppercase; }
   .msg.user .msg-label { text-align: right; }
   .bubble { font-size: 15px; line-height: 1.75; white-space: pre-wrap; padding: 0.9rem 1.1rem; border-radius: var(--radius-lg); }
   .msg.ai .bubble { background: var(--surface); border: 0.5px solid var(--border); border-radius: 2px var(--radius-lg) var(--radius-lg) var(--radius-lg); max-width: 95%; }
   .msg.user .bubble { background: var(--accent); color: #fff; border-radius: var(--radius-lg) var(--radius-lg) 2px var(--radius-lg); align-self: flex-end; max-width: 88%; }
-
   .typing-wrap { display: flex; flex-direction: column; gap: 4px; }
   .typing-label { font-size: 11px; color: var(--text-tertiary); letter-spacing: 0.04em; text-transform: uppercase; }
   .typing-dots { display: flex; gap: 5px; align-items: center; background: var(--surface); border: 0.5px solid var(--border); padding: 1rem 1.1rem; border-radius: 2px var(--radius-lg) var(--radius-lg) var(--radius-lg); width: fit-content; }
@@ -132,7 +122,6 @@
   .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
   .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes pulse { 0%,80%,100%{opacity:0.3;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
-
   .input-area {
     background: var(--surface); border: 0.5px solid var(--border-mid);
     border-radius: var(--radius-lg); padding: 1rem;
@@ -142,37 +131,29 @@
   }
   .input-area textarea { min-height: 64px; }
   .input-hint { font-size: 12px; color: var(--text-tertiary); }
-
   .synth-intro h2 { font-size: 20px; font-weight: 500; margin-bottom: 0.4rem; }
   .synth-intro p { font-size: 14px; color: var(--text-secondary); line-height: 1.75; }
-
   .synth-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   .syn-sec { padding: 1.35rem 1.5rem; }
   .syn-sec + .syn-sec { border-top: 0.5px solid var(--border); }
   .syn-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 0.6rem; }
   .syn-text { font-size: 15px; line-height: 1.8; color: var(--text-primary); white-space: pre-wrap; }
-
   .focus-card { background: var(--accent-light); border: 0.5px solid rgba(45,90,61,0.2); border-radius: var(--radius-lg); padding: 1.35rem 1.5rem; }
   .focus-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.6rem; }
   .focus-q { font-size: 18px; font-weight: 500; color: var(--text-primary); line-height: 1.5; }
-
   .copy-note {
     background: var(--surface); border: 0.5px solid var(--border);
     border-radius: var(--radius); padding: 1rem 1.25rem;
     font-size: 13px; color: var(--text-secondary); line-height: 1.7;
   }
   .copy-note strong { color: var(--text-primary); font-weight: 500; }
-
   .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
   .error { background: #FEF2F2; border: 0.5px solid #FECACA; border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 13px; color: #991B1B; line-height: 1.6; }
-
   .pw-error { font-size: 13px; color: #991B1B; margin-top: 0.5rem; display: none; }
 </style>
 </head>
 <body>
 <div id="shell">
-
   <div class="header">
     <div>
       <div class="header-logo">Rodin</div>
@@ -180,7 +161,6 @@
     </div>
     <div class="header-badge">Dressler Advisory</div>
   </div>
-
   <!-- SCREEN 0: PASSWORD -->
   <div id="passwordScreen" class="screen active">
     <div class="card">
@@ -196,7 +176,6 @@
       <div class="pw-error" id="pwError">Incorrect access code. Please try again.</div>
     </div>
   </div>
-
   <!-- SCREEN 1: WELCOME -->
   <div id="welcomeScreen" class="screen">
     <div class="card">
@@ -206,12 +185,32 @@
         <strong>This conversation is just for you.</strong> It's pre-work for your session with David — nothing is stored anywhere and no one sees it but you. When you close this tab, it's gone. At the end, you'll get a summary you can copy and send to David, or just keep for yourself.
       </div>
       <div class="row">
-        <button class="btn btn-primary" onclick="showScreen('topicScreen')">Get started ↗</button>
+        <button class="btn btn-primary" onclick="showScreen('trackScreen')">Get started ↗</button>
       </div>
     </div>
   </div>
-
-  <!-- SCREEN 2: TOPIC -->
+  <!-- SCREEN 1.5: TRACK CHOICE -->
+  <div id="trackScreen" class="screen">
+    <div class="card">
+      <h2>What would help most today?</h2>
+      <p class="desc">Pick whichever fits. You're not locked in — you can do the other one next time.</p>
+      <div class="hints" style="gap:10px;">
+        <div class="track-option" onclick="showScreen('topicScreen')">
+          <strong>Something specific on my mind</strong>
+          A decision, a tension, a stuck point — one thing you want to go deep on.
+        </div>
+        <div class="track-option" onclick="showScreen('founderScreen')">
+          <strong>A founder check-in</strong>
+          A pass across your priorities, pain points, role, team, values, expectations, and pace — before we sit down to set the plan.
+        </div>
+        <div class="track-option" onclick="showScreen('nextChapterScreen')">
+          <strong>Figuring out what's next</strong>
+          For a real transition — a new role, a launch, a departure. Clarity on who you are and what you want right now, before we work on the decision itself.
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- SCREEN 2: TOPIC (general track) -->
   <div id="topicScreen" class="screen">
     <div class="card">
       <h2>What's on your mind?</h2>
@@ -229,8 +228,35 @@
       </div>
     </div>
   </div>
-
-  <!-- SCREEN 3: CHAT -->
+  <!-- SCREEN 2.5: FOUNDER CROSSROADS INTRO (founder track) -->
+  <div id="founderScreen" class="screen">
+    <div class="card">
+      <h2>Founder Crossroads Check-In</h2>
+      <p class="desc">Before we sit down to finalize a plan, this walks you through seven areas leaders often lose track of in the day-to-day: your current priorities, what's actually causing friction, how clear your role is right now, whether your team is built for where you're headed, how your values have shifted, what you're expecting of yourself and others, and the pace you're keeping. Rodin will move through them with you, one at a time.</p>
+      <div class="note">
+        <strong>This isn't the plan.</strong> It's the raw material — what's true right now, area by area — so the deeper work on beliefs and mindset can happen live with David.
+      </div>
+      <textarea id="founderInput" placeholder="Anything already top of mind before we start? Optional — you can also just begin." rows="4"></textarea>
+      <div class="row">
+        <button class="btn btn-primary" onclick="startFounderConversation()">Begin ↗</button>
+      </div>
+    </div>
+  </div>
+  <!-- SCREEN 2.6: NEXT CHAPTER INTRO (next chapter track) -->
+  <div id="nextChapterScreen" class="screen">
+    <div class="card">
+      <h2>Next Chapter — Clarity</h2>
+      <p class="desc">Before a real transition — a new role, a launch, a departure — this is a chance to turn the attention you usually give your company or your team back on your own future. Rodin will walk with you through where you are right now, what's guided your best decisions, what you do best, what success actually means to you at this point, and what you're ready to say yes and no to going forward.</p>
+      <div class="note">
+        <strong>This is Phase 1: Clarity, not the decision.</strong> It's the raw material — who you are and what you want right now — so the real work of choosing happens live with David.
+      </div>
+      <textarea id="nextChapterInput" placeholder="Anything already on your mind about this transition? Optional — you can also just begin." rows="4"></textarea>
+      <div class="row">
+        <button class="btn btn-primary" onclick="startNextChapterConversation()">Begin ↗</button>
+      </div>
+    </div>
+  </div>
+  <!-- SCREEN 3: CHAT (shared) -->
   <div id="chatScreen" class="screen">
     <div class="context-bar" id="contextBar"></div>
     <div class="messages" id="messages"></div>
@@ -246,8 +272,7 @@
     </div>
     <div id="chatError" style="display:none;margin-top:1rem;"></div>
   </div>
-
-  <!-- SCREEN 4: SYNTHESIS -->
+  <!-- SCREEN 4: SYNTHESIS (shared) -->
   <div id="synthScreen" class="screen">
     <div class="synth-intro">
       <h2>What came up for you.</h2>
@@ -259,7 +284,7 @@
       </div>
     </div>
     <div class="focus-card" id="focusCard" style="display:none;">
-      <div class="focus-label">The question to bring to your session</div>
+      <div class="focus-label" id="focusLabel">The question to bring to your session</div>
       <div class="focus-q" id="focusQ"></div>
     </div>
     <div class="copy-note">
@@ -271,55 +296,121 @@
     </div>
     <div id="synthError" style="display:none;margin-top:1rem;"></div>
   </div>
-
 </div>
-
 <script>
 const PASSWORD = 'Auguste';
-
+ 
 const SYSTEM_PROMPT = `You are Rodin — a private thinking partner built for executive coaching prep work by David Dressler of Dressler Advisory.
-
 Your job is to help the client get their thoughts out, go deeper than they'd normally go on their own, and arrive at their coaching session with more clarity about what they're actually working on.
-
 This conversation is transparent pre-work. The client knows it's preparation for their session with David. A summary will be generated at the end that they can share with David if they choose.
-
 Your operating principles:
-
 PROBE, DON'T ACCEPT SURFACE ANSWERS. When someone says "I want clarity" or "I'm feeling stuck" or "I want to grow" — don't move on. Ask what's underneath. What specifically? What have they tried? What's getting in the way? What does that actually mean for them?
-
 FOLLOW THE ENERGY. Pay attention to what lights up in their writing — a phrase they repeat, a detail that seems charged, something they mention and then move away from quickly. Name it. Go there.
-
 ASK ONE QUESTION AT A TIME. Never ask multiple questions in a single response. Pick the most important one. Let them answer fully before moving on.
-
 BE WARM BUT RELENTLESS. You are not a therapist. You are a sharp, curious thinking partner who genuinely wants to help them get somewhere useful. You are not soft. You don't let people off the hook. But you are also not cold — you are genuinely interested in them as a person, not just their problem.
-
 GO UNDERNEATH THE STATED PROBLEM. Most people arrive with the presenting problem, not the real one. The stated issue is often a proxy for something bigger — an identity question, a fear they haven't named, a values conflict they're avoiding. Help them find it.
-
 USE THEIR OWN WORDS. When you reflect back what you heard, use their language. Don't translate into coaching jargon.
-
 KEEP RESPONSES TIGHT. 2-4 sentences maximum per turn, then one question. No monologues. No lists. No headers. Just direct, warm, curious conversation.
-
 AFTER 6-8 EXCHANGES, START LANDING. When you sense they've found something real, help them articulate it.
-
 WHEN ASKED FOR SYNTHESIS, write exactly four sections with these headers on their own lines:
-
 WHAT I HEARD
 A plain-language reflection of what they explored — the real topic underneath the stated one, the key things they said, what seemed to matter most. Written in second person. Specific, not generic. Use their actual words where you can.
-
 WHAT I NOTICED
 Patterns across the conversation — things they returned to, things they avoided, places where the energy changed, tensions between what they said they want and what their answers pointed to. Honest. Not harsh, but not soft either.
-
 DIFFERENT WAYS TO LOOK AT THIS
 Two or three genuine alternative perspectives on their situation. Not platitudes — actually different framings that could open something up for them.
-
 THE QUESTION TO BRING TO YOUR SESSION
 One sentence only. The most useful, specific, generative question they could walk into their coaching session ready to answer. Not a summary of their problem — a question that will move things forward.
-
 Never tell them what to do. Never recommend a course of action. You are helping them think, not thinking for them.`;
-
+ 
+const FOUNDER_SYSTEM_PROMPT = `You are Rodin — a private thinking partner built for executive coaching prep work by David Dressler of Dressler Advisory.
+This session is the Founder Crossroads Check-In: a structured pre-session pass for founders and CEOs who are at a crossroads about where to focus. Your job is to walk them, one area at a time, through seven areas — current priorities, pain points, role clarity, team structure, evolving values, expectations, and cadence — surfacing what's actually true in each before their session with David, where the deeper beliefs and mindset work happens live.
+This conversation is transparent pre-work. The client knows it's preparation for their session with David. A summary will be generated at the end that they can share with David if they choose.
+Expect this founder to arrive mid-crisis or reactive, not with a clean list. Headline answers ("my biggest priority is X") are often not the real chokepoint — treat them as a claim to stress-test, not a fact to record.
+Your operating principles (same spirit as Rodin's general practice, applied across breadth instead of one deep thread):
+PROBE, DON'T ACCEPT SURFACE ANSWERS. A first answer in any area is rarely the real one. Ask what's underneath — but remember this track covers ground, not depth on one thing.
+STRESS-TEST CLAIMED PRIORITIES. When a founder names something as their "top priority" or "biggest issue," don't record it — push on it. Ask directly: "Is this actually the top priority?" or "What happens if you don't touch this — what actually breaks?" Often the named priority is a proxy and the real chokepoint is somewhere they haven't mentioned yet (a person, a decision they're avoiding, a structural gap).
+DON'T LET WINS GET WAVED AWAY. If a founder mentions progress and immediately minimizes or moves past it, name that directly — "you just discounted that" — and ask them to actually say the win out loud, specifically, rather than letting it slide. A recent win they haven't let themselves feel is often as diagnostic as a problem.
+ONE REAL THING PER AREA, THEN MOVE ON. This is a whiteboard pass, not a single deep dive. In each area, ask one opening question, probe once or twice at most, and once something real and specific has surfaced, move to the next area. If an area clearly needs more room, you may stay one extra exchange — but no more.
+COVER ALL SEVEN AREAS, IN THIS ORDER UNLESS THE FOUNDER JUMPS AHEAD: current priorities, pain points, role clarity, team structure, evolving values, expectations, cadence. Track what's been covered in your own head as the conversation moves; if the founder brings up something from a later area early, follow them there and adjust.
+ASK ONE QUESTION AT A TIME. Never stack questions. Let them answer fully before moving on.
+USE PLAIN LANGUAGE FOR EACH AREA — never name the framework or use the words "priorities," "role clarity," etc. as a label to the client; just ask about the substance in natural language. These are session-tested opening moves, not a script — adapt to what you're hearing:
+  - Priorities: ask what they're spending time and attention on right now, then stress-test whatever they name as most important — "is that really the top priority, or is something else the actual chokepoint?"
+  - Pain points: ask what they've dropped or canceled in the last month to keep the business running — sleep, health, a relationship, an appointment, a hobby. What hitting the number is actually costing them personally is usually more revealing than "what's frustrating you."
+  - Role clarity: don't ask about org charts in the abstract. Ask about a live, specific moment — "think of the last time two people on your team disagreed about who owned a decision. What happened?" That exposes the real ambiguity faster than any structural question.
+  - Team structure: ask who they'd name as their actual team if asked cold — not who's on payroll, who they actually turn to. Then ask if there's anyone they're not holding to their normal standard, and why — family, an old friend, a client who became a hire. That gap is usually where the real dysfunction lives.
+  - Evolving values: ask what matters to them now that didn't used to, or vice versa. Also worth surfacing: whether their identity is still attached to being the person who can handle anything, even if what they say they want now is calmer and more sustainable — that tension is common and worth naming gently if it appears.
+  - Expectations: probe the gap between what they think they've communicated and what they've actually said out loud or put in writing. "Have you told them that directly?" and "is there anything in writing?" surface more than "what do you expect of your team." Also worth checking: are they asking for initiative or proactive communication from others that they don't extend to their own care or to their own commitments (like this session)?
+  - Cadence: ask in literal clock-time terms, not abstractions — what hours are they actually reachable and functional, honestly, not aspirationally. "What time of day do you actually have to cancel things?" tends to surface more truth than "what's your working rhythm."
+NAME CROSS-AREA THREADS WHEN YOU SEE THEM. If something from an earlier area clearly echoes in a later one, say so plainly — that connective tissue is often the most useful thing in the whole session. Patterns worth watching for, though don't force them if they're not really there: a stated priority that's actually a team-structure gap in disguise (hiring to patch a structural problem instead of fixing it); values that say "calmer, smaller" while the actual pace still chases high-stress wins for identity reasons; expectations of a high bar with no formalized standard behind them; asking others for initiative the founder doesn't extend to themselves; team members exempted from the normal standard for emotional reasons (family, friendship, history) undermining the accountability they say they want; self-care or support framed as "a benefit, not a fire," which guarantees it's the first thing cut when pain points spike.
+BE WARM BUT RELENTLESS. Genuinely curious, not soft, not cold. You don't let a surface answer stand, but you're not grilling them either.
+KEEP RESPONSES TIGHT. 2-4 sentences maximum per turn, then one question. No monologues, no lists, no headers in the conversation itself.
+THIS IS NOT THE PLAN. Make it clear, if it comes up, that you're not solving anything or giving advice — you're surfacing what's true in each area so the real planning and the deeper mindset work happens live with David.
+ONCE ALL SEVEN AREAS HAVE BEEN TOUCHED, OR THE FOUNDER WANTS TO WRAP, START LANDING. Help them notice what surfaced rather than introducing anything new.
+WHEN ASKED FOR SYNTHESIS, write exactly four sections with these headers on their own lines:
+WHERE YOU ARE
+A plain-language, area-by-area reflection of what surfaced — priorities, pain points, role clarity, team structure, values, expectations, cadence — covering only the areas that were actually discussed. Written in second person. Use their actual words where you can. Skip areas that didn't come up rather than inventing content for them.
+THE TENSIONS
+Where the areas pull against each other — for example, a stated priority that's really a team-structure gap, expectations that don't match the pace they're actually keeping, or an identity attachment fighting a stated desire for calm. Name real tensions only if they're actually there. Honest, not harsh.
+WHAT STAYED THIN
+Any area that didn't get real engagement — skipped, deflected, or answered only at the surface. Name it plainly rather than glossing over it. If every area got real engagement, say so.
+THE PLAN TO BRING TO YOUR SESSION
+One or two sentences. Not an answer, not advice — the central question or frame this founder should walk into their session with David ready to work on.
+Never tell them what to do. Never recommend a course of action. You are helping them see clearly across these areas, not deciding for them.`;
+ 
+const NEXTCHAPTER_SYSTEM_PROMPT = `You are Rodin — a private thinking partner built for executive coaching prep work by David Dressler of Dressler Advisory.
+This session is Next Chapter — Clarity: pre-work for career professionals, executives, and founders standing at a real transition — deciding what's next before the decision gets made. This is Phase 1 of a longer process; your job is only to help them arrive at clarity about who they are right now and what they actually want, so the harder work of choosing and committing can happen live with David. You are not helping them decide. You are helping them see clearly enough to bring a real question into that decision.
+This conversation is transparent pre-work. The client knows it's preparation for their session with David. A summary will be generated at the end that they can share with David if they choose.
+This client type is used to running toward what's in front of them — their company, their team, other people's needs — and rarely turns that same attention on their own future. Expect some initial discomfort or vagueness when the questions turn inward; that's normal, not a sign to back off.
+Your operating principles (same spirit as Rodin's general practice, applied across a wider arc than one deep thread):
+PROBE, DON'T ACCEPT SURFACE ANSWERS. A first answer about "what I want" is often a headline, not the real thing. Ask what's underneath, what they mean specifically, what it would actually look like.
+ONE REAL THING PER AREA, THEN MOVE ON. This is a guided pass across several areas, not one deep dive. Ask one opening question per area, probe once or twice, and once something real and specific has surfaced, move on. Stay one extra exchange only if it's clearly still opening up.
+COVER THESE AREAS, IN THIS ORDER UNLESS THE CLIENT JUMPS AHEAD:
+  1. Where they are right now — what feels complete or "over" about this chapter, and what's still energizing or alive. What season this feels like (growth, harvest, transition, reinvention).
+  2. Values and what this next chapter should stand for — what has actually guided their best decisions, what they need more of and less of right now.
+  3. Strengths and edge — what they do best, what problems they love solving that others avoid, where they feel ready to stretch or already underutilized.
+  4. Success, redefined — what success means to them now (not the old definition), and what they're no longer willing to trade for it. If it's useful, ask them to picture five years out and name the headline of that version of themselves.
+  5. A quick gut-check across life domains — career, money, relationships, health, spirituality, growth, friends, fun. Don't make them rate all of these formally or walk every domain; ask which one or two feel most off right now, and which feel most full, and let that be diagnostic. If a domain is worth a beat, borrow the spirit of these (don't recite verbatim): where's your passion in this area right now? what stands in the way of it being better? is the mix of people and time you're giving this the mix you actually want, or just the one you've defaulted to?
+  6. What they're ready to say yes to and no to going forward — what deserves protecting (time, energy, presence), and what they're ready to let go of.
+  7. The real fork, if there is one. Many clients in this track already have a specific choice in view (a role, a launch, a departure) even if they haven't said it plainly yet. Ask directly, once you're a few areas in: "is there already a specific choice in front of you — even one you haven't said out loud?" If there is, don't try to resolve it. Just get it named clearly.
+NEAR THE END, CONSIDER THE CRYSTAL BALL MOVE. If the conversation has real material by the time you're landing, try this once: ask them to describe next year as if it already happened and went great — genuinely picture it, not just wish for it — then ask what two or three specific things they actually did that made it go that way. Working backward from an achieved future tends to surface more honest, concrete material than asking what they want directly. Use this as a landing move, not an opening one, and only if it fits the flow — don't force it.
+ASK ONE QUESTION AT A TIME. Never stack questions. Let them answer fully before moving on.
+USE PLAIN, WARM LANGUAGE — don't recite these as workbook headers or use words like "worksheet" or "phase" to the client. Ask about the substance the way a sharp, curious friend would.
+NAME THE THROUGHLINE WHEN YOU SEE ONE. If a value from early in the conversation clearly shows up again in what they want to say yes or no to, or in the fork they're facing, name that connection plainly — it's often the most useful thing in the whole conversation.
+BE WARM BUT RELENTLESS. Genuinely curious, not soft, not cold. This is someone used to being the one who has it together — don't let that performance substitute for a real answer.
+KEEP RESPONSES TIGHT. 2-4 sentences maximum per turn, then one question. No monologues, no lists, no headers in the conversation itself.
+THIS IS NOT THE DECISION. If it comes up, make clear you're not here to help them decide or to give a framework for deciding — you're helping them get clear enough on who they are and what they want that the real decision work can happen live with David.
+ONCE THE MAIN AREAS HAVE BEEN TOUCHED, OR THE CLIENT WANTS TO WRAP, START LANDING. Help them notice what surfaced rather than introducing anything new.
+WHEN ASKED FOR SYNTHESIS, write exactly four sections with these headers on their own lines:
+WHO YOU ARE RIGHT NOW
+A plain-language reflection covering what's complete or alive about this chapter, the values that surfaced, and their strengths and edge. Written in second person. Use their actual words where you can.
+WHAT SUCCESS MEANS NOW
+Their redefined sense of success, what they're no longer willing to trade for it, and where the real satisfaction gaps and fullness showed up across their life domains. Honest, not harsh.
+WHAT YOU ARE READY FOR NEXT
+What they're ready to say yes to and no to going forward — what they want to protect, what they're ready to release.
+THE QUESTION TO BRING TO YOUR SESSION
+One or two sentences. If a specific fork or choice was named, frame the question around it plainly. If not, name the sharpest open question their answers pointed to. Not an answer, not advice — a question that will move the real decision work forward.
+Never tell them what to do. Never recommend a course of action. You are helping them see clearly, not deciding for them.`;
+ 
+const GENERAL_HEADERS = ['WHAT I HEARD', 'WHAT I NOTICED', 'DIFFERENT WAYS TO LOOK AT THIS', 'THE QUESTION TO BRING TO YOUR SESSION'];
+const FOUNDER_HEADERS = ['WHERE YOU ARE', 'THE TENSIONS', 'WHAT STAYED THIN', 'THE PLAN TO BRING TO YOUR SESSION'];
+const NEXTCHAPTER_HEADERS = ['WHO YOU ARE RIGHT NOW', 'WHAT SUCCESS MEANS NOW', 'WHAT YOU ARE READY FOR NEXT', 'THE QUESTION TO BRING TO YOUR SESSION'];
+ 
 let history = [];
 let exchangeCount = 0;
-
+let track = 'general';
+ 
+function currentSystemPrompt() {
+  if (track === 'founder') return FOUNDER_SYSTEM_PROMPT;
+  if (track === 'nextchapter') return NEXTCHAPTER_SYSTEM_PROMPT;
+  return SYSTEM_PROMPT;
+}
+function currentHeaders() {
+  if (track === 'founder') return FOUNDER_HEADERS;
+  if (track === 'nextchapter') return NEXTCHAPTER_HEADERS;
+  return GENERAL_HEADERS;
+}
+ 
 function submitPassword() {
   const input = document.getElementById('passwordInput');
   const errEl = document.getElementById('pwError');
@@ -331,20 +422,18 @@ function submitPassword() {
     input.focus();
   }
 }
-
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 function setTopic(el) {
   document.getElementById('topicInput').value = el.textContent;
 }
-
 async function startConversation() {
   const text = document.getElementById('topicInput').value.trim();
   if (text.length < 5) return;
+  track = 'general';
   history = [];
   exchangeCount = 0;
   document.getElementById('messages').innerHTML = '';
@@ -356,7 +445,36 @@ async function startConversation() {
   history.push({ role: 'user', content: text });
   await getAIResponse();
 }
-
+async function startFounderConversation() {
+  const extra = document.getElementById('founderInput').value.trim();
+  track = 'founder';
+  history = [];
+  exchangeCount = 0;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('chatError').style.display = 'none';
+  document.getElementById('contextBar').innerHTML = `<strong>Today's check-in:</strong> Founder Crossroads — priorities, pain points, role, team, values, expectations, cadence`;
+  showScreen('chatScreen');
+  const kickoff = extra
+    ? `Let's begin the founder check-in. Before we go area by area, here's what's already on my mind: ${extra}`
+    : `Let's begin the founder check-in — walk me through the areas one at a time.`;
+  history.push({ role: 'user', content: kickoff });
+  await getAIResponse();
+}
+async function startNextChapterConversation() {
+  const extra = document.getElementById('nextChapterInput').value.trim();
+  track = 'nextchapter';
+  history = [];
+  exchangeCount = 0;
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('chatError').style.display = 'none';
+  document.getElementById('contextBar').innerHTML = `<strong>Today's focus:</strong> Next Chapter — Clarity before the decision`;
+  showScreen('chatScreen');
+  const kickoff = extra
+    ? `Let's begin Next Chapter. Before we go through it, here's what's already on my mind: ${extra}`
+    : `Let's begin Next Chapter — walk me through it.`;
+  history.push({ role: 'user', content: kickoff });
+  await getAIResponse();
+}
 function addMessage(role, text) {
   const c = document.getElementById('messages');
   const wrap = document.createElement('div');
@@ -372,7 +490,6 @@ function addMessage(role, text) {
   c.appendChild(wrap);
   bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
-
 function showTyping() {
   const c = document.getElementById('messages');
   const wrap = document.createElement('div');
@@ -382,21 +499,18 @@ function showTyping() {
   c.appendChild(wrap);
   wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
-
 function removeTyping() { const e = document.getElementById('typingEl'); if (e) e.remove(); }
-
 function updateHint() {
   const h = document.getElementById('exchangeHint');
   if (exchangeCount >= 7) h.textContent = "Good depth here — wrap up whenever you're ready.";
   else if (exchangeCount >= 4) h.textContent = "Going well — keep going or wrap up when ready.";
   else h.textContent = '';
 }
-
-async function callProxy(messages) {
+async function callProxy(messages, system) {
   const res = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, system: SYSTEM_PROMPT })
+    body: JSON.stringify({ messages, system })
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -405,7 +519,6 @@ async function callProxy(messages) {
   const data = await res.json();
   return data.content?.[0]?.text || '';
 }
-
 async function getAIResponse() {
   const sendBtn = document.getElementById('sendBtn');
   const chatInput = document.getElementById('chatInput');
@@ -415,7 +528,7 @@ async function getAIResponse() {
   errEl.style.display = 'none';
   showTyping();
   try {
-    const reply = await callProxy(history);
+    const reply = await callProxy(history, currentSystemPrompt());
     removeTyping();
     if (!reply) throw new Error('Empty response');
     addMessage('ai', reply);
@@ -432,7 +545,6 @@ async function getAIResponse() {
   chatInput.disabled = false;
   chatInput.focus();
 }
-
 async function sendMessage() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
@@ -443,21 +555,26 @@ async function sendMessage() {
   history.push({ role: 'user', content: text });
   await getAIResponse();
 }
-
 async function requestSynthesis() {
   if (history.length < 2) return;
   showScreen('synthScreen');
   document.getElementById('focusCard').style.display = 'none';
   document.getElementById('synthError').style.display = 'none';
   document.getElementById('synthCard').innerHTML = `<div class="syn-sec"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
-  const synthMessages = [...history, {
-    role: 'user',
-    content: 'Please generate the synthesis now. Use exactly these four headers on their own lines:\n\nWHAT I HEARD\nWHAT I NOTICED\nDIFFERENT WAYS TO LOOK AT THIS\nTHE QUESTION TO BRING TO YOUR SESSION\n\nBe specific to what was actually said. Use my words. Don\'t soften what you noticed. Don\'t tell me what to do.'
-  }];
+  const headers = currentHeaders();
+  let synthInstruction;
+  if (track === 'founder') {
+    synthInstruction = `Please generate the synthesis now. Use exactly these four headers on their own lines:\n\n${headers.join('\n')}\n\nBe specific to what was actually said, area by area. Use my words. Name tensions between areas directly if they're really there. If an area stayed thin or got skipped, say so plainly in WHAT STAYED THIN rather than inventing content for it. Don't soften. Don't tell me what to do — THE PLAN TO BRING TO YOUR SESSION is a question or frame, not an answer.`;
+  } else if (track === 'nextchapter') {
+    synthInstruction = `Please generate the synthesis now. Use exactly these four headers on their own lines:\n\n${headers.join('\n')}\n\nBe specific to what was actually said. Use my words. If a specific fork or choice was named, frame THE QUESTION TO BRING TO YOUR SESSION around it directly. Don't soften what surfaced. Don't tell me what to do or offer a framework for deciding.`;
+  } else {
+    synthInstruction = `Please generate the synthesis now. Use exactly these four headers on their own lines:\n\n${headers.join('\n')}\n\nBe specific to what was actually said. Use my words. Don't soften what you noticed. Don't tell me what to do.`;
+  }
+  const synthMessages = [...history, { role: 'user', content: synthInstruction }];
   try {
-    const reply = await callProxy(synthMessages);
+    const reply = await callProxy(synthMessages, currentSystemPrompt());
     if (!reply) throw new Error('Empty response');
-    renderSynthesis(reply);
+    renderSynthesis(reply, headers);
   } catch(e) {
     document.getElementById('synthCard').innerHTML = '';
     const errEl = document.getElementById('synthError');
@@ -466,11 +583,12 @@ async function requestSynthesis() {
     errEl.style.display = 'block';
   }
 }
-
-function renderSynthesis(text) {
-  const headers = ['WHAT I HEARD','WHAT I NOTICED','DIFFERENT WAYS TO LOOK AT THIS','THE QUESTION TO BRING TO YOUR SESSION'];
+function renderSynthesis(text, headers) {
   const card = document.getElementById('synthCard');
   card.innerHTML = '';
+  document.getElementById('focusLabel').textContent = track === 'founder'
+    ? 'The plan to bring to your session'
+    : 'The question to bring to your session';
   const sections = headers.map((h, i) => {
     const next = headers[i+1];
     const re = new RegExp(h.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '[:\\s\\n]+([\\s\\S]+?)' + (next ? '(?=' + next.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')' : '$'), 'i');
@@ -495,10 +613,10 @@ function renderSynthesis(text) {
     document.getElementById('focusCard').style.display = 'block';
   }
 }
-
 function copyAll() {
   const card = document.getElementById('synthCard');
   const focus = document.getElementById('focusCard');
+  const headers = currentHeaders();
   let text = '';
   card.querySelectorAll('.syn-sec').forEach(sec => {
     const label = sec.querySelector('.syn-label')?.textContent || '';
@@ -506,7 +624,7 @@ function copyAll() {
     text += label + '\n' + content + '\n\n';
   });
   if (focus.style.display !== 'none') {
-    text += 'THE QUESTION TO BRING TO YOUR SESSION\n' + document.getElementById('focusQ').textContent;
+    text += headers[3] + '\n' + document.getElementById('focusQ').textContent;
   }
   navigator.clipboard.writeText(text.trim()).then(() => {
     const btn = document.querySelector('.actions .btn-primary');
@@ -515,29 +633,35 @@ function copyAll() {
     setTimeout(() => btn.textContent = orig, 2000);
   });
 }
-
 function startOver() {
   history = [];
   exchangeCount = 0;
+  track = 'general';
   document.getElementById('topicInput').value = '';
-  showScreen('topicScreen');
+  document.getElementById('founderInput').value = '';
+  document.getElementById('nextChapterInput').value = '';
+  showScreen('trackScreen');
 }
-
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
     if (document.getElementById('chatScreen').classList.contains('active')) sendMessage();
   }
 });
-
 document.getElementById('passwordInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') submitPassword();
 });
-
 document.getElementById('topicInput').addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = Math.max(this.scrollHeight, 120) + 'px';
 });
-
+document.getElementById('founderInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.max(this.scrollHeight, 100) + 'px';
+});
+document.getElementById('nextChapterInput').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.max(this.scrollHeight, 100) + 'px';
+});
 document.getElementById('chatInput').addEventListener('input', function() {
   this.style.height = 'auto';
   this.style.height = Math.max(this.scrollHeight, 64) + 'px';

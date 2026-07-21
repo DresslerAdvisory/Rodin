@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,7 +55,7 @@
     background: var(--accent-light); border-radius: var(--radius);
     padding: 0.75rem 1rem; line-height: 1.65; margin-bottom: 1.25rem;
   }
-  .note strong { color: var(--accent); font-weight: 500; }
+  .note strong { color: var(--accent); font-weight: 700; }
   .confidential {
     font-size: 12px; color: var(--text-tertiary);
     border: 0.5px solid var(--border);
@@ -60,6 +63,8 @@
     line-height: 1.7; margin-bottom: 1.25rem;
     font-style: italic;
   }
+  .confidential strong { color: var(--text-primary); font-weight: 700; font-style: normal; }
+  .copy-note strong { font-weight: 700; }
   textarea, input[type=text], input[type=password] {
     width: 100%; padding: 0.875rem 1rem; font-size: 15px;
     font-family: var(--font); line-height: 1.7;
@@ -167,7 +172,7 @@
       <h2>Welcome to Rodin</h2>
       <p class="desc">Rodin is a private thinking partner for clients of David Dressler. Please enter your access code to continue.</p>
       <div class="confidential">
-        This tool is for the exclusive use of David Dressler's clients. Please do not share this link, your access code, or any details of this tool with others without David's prior consent.
+        This tool is for the exclusive use of David Dressler's clients. Please do not share this link, your access code, or any details of this tool with others without David's prior consent. <strong>For your privacy, the screen locks automatically after 10 minutes of inactivity</strong> and will ask for this code again — nothing you've written is lost when that happens.
       </div>
       <div class="input-row">
         <input type="password" id="passwordInput" placeholder="Enter access code" autocomplete="off" />
@@ -182,7 +187,7 @@
       <h2>Before your session with David</h2>
       <p class="desc">Rodin is a private thinking partner. It will ask you questions, push you to go deeper than you normally would on your own, and help you arrive at your session with more clarity about what you're actually working on.</p>
       <div class="note">
-        <strong>This conversation is just for you.</strong> It's pre-work for your session with David — nothing is stored anywhere and no one sees it but you. When you close this tab, it's gone. At the end, you'll get a summary you can copy and send to David, or just keep for yourself.
+        <strong>This conversation is just for you.</strong> It's pre-work for your session with David — no one sees it but you, and nothing leaves this browser tab. <strong>If you step away for more than 10 minutes, the screen locks and asks for your access code again</strong> — but nothing is lost when you unlock it; you'll pick up right where you left off. <strong>Close the tab when you're done and it's gone for good.</strong> At the end, you'll get a summary you can copy and send to David, or just keep for yourself.
       </div>
       <div class="row">
         <button class="btn btn-primary" onclick="showScreen('trackScreen')">Get started ↗</button>
@@ -288,7 +293,7 @@
       <div class="focus-q" id="focusQ"></div>
     </div>
     <div class="copy-note">
-      <strong>Before you close this tab:</strong> This summary only exists here — the moment you close it, it's gone. Do two things now: (1) click "Copy summary to clipboard" and paste it into an email to David at david@ddressler.com ahead of your session, and (2) paste a copy into a doc or note for yourself to reference during the call.
+      <strong>Before you close this tab:</strong> This summary only exists here — <strong>the moment you close the tab, it's gone for good.</strong> (Stepping away is fine — the screen will just lock after 10 minutes and ask for your code again, with nothing lost.) Do two things now: (1) click "Copy summary to clipboard" and paste it into an email to David at david@ddressler.com ahead of your session, and (2) paste a copy into a doc or note for yourself to reference during the call.
     </div>
     <div class="actions">
       <button class="btn btn-primary" onclick="copyAll()">Copy summary to clipboard</button>
@@ -411,11 +416,80 @@ function currentHeaders() {
   return GENERAL_HEADERS;
 }
  
+// --- Session persistence + idle auto-lock ---
+// Progress is snapshotted to sessionStorage (private to this one browser tab,
+// cleared automatically when the tab is actually closed) so an idle re-lock or an
+// accidental reload never means starting over. The access code is still required
+// again after IDLE_LOCK_MS of no activity, so an unattended screen doesn't sit
+// open showing someone's answers.
+const STORAGE_KEY = 'rodin_session_v1';
+const IDLE_LOCK_MS = 10 * 60 * 1000; // 10 minutes
+let isUnlocked = false;
+let idleTimer = null;
+ 
+function currentScreenId() {
+  const el = document.querySelector('.screen.active');
+  return el ? el.id : 'passwordScreen';
+}
+function saveState() {
+  if (currentScreenId() === 'passwordScreen') return;
+  try {
+    const state = {
+      track, history, exchangeCount,
+      screen: currentScreenId(),
+      messagesHTML: document.getElementById('messages').innerHTML,
+      contextBarHTML: document.getElementById('contextBar').innerHTML,
+      synthCardHTML: document.getElementById('synthCard').innerHTML,
+      focusCardDisplay: document.getElementById('focusCard').style.display,
+      focusLabelText: document.getElementById('focusLabel').textContent,
+      focusQText: document.getElementById('focusQ').textContent
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {}
+}
+function restoreState() {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const state = JSON.parse(raw);
+    track = state.track || 'general';
+    history = state.history || [];
+    exchangeCount = state.exchangeCount || 0;
+    document.getElementById('messages').innerHTML = state.messagesHTML || '';
+    document.getElementById('contextBar').innerHTML = state.contextBarHTML || '';
+    document.getElementById('synthCard').innerHTML = state.synthCardHTML || '';
+    document.getElementById('focusCard').style.display = state.focusCardDisplay || 'none';
+    document.getElementById('focusLabel').textContent = state.focusLabelText || '';
+    document.getElementById('focusQ').textContent = state.focusQText || '';
+    updateHint();
+    showScreen(state.screen || 'welcomeScreen');
+    return true;
+  } catch(e) { return false; }
+}
+function armIdleTimer() {
+  if (!isUnlocked) return;
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(lockForIdle, IDLE_LOCK_MS);
+}
+function lockForIdle() {
+  saveState();
+  isUnlocked = false;
+  showScreen('passwordScreen');
+}
+['keydown', 'mousedown', 'mousemove', 'touchstart', 'scroll'].forEach(evt => {
+  document.addEventListener(evt, armIdleTimer, { passive: true });
+});
+ 
 function submitPassword() {
   const input = document.getElementById('passwordInput');
   const errEl = document.getElementById('pwError');
   if (input.value.trim() === PASSWORD) {
-    showScreen('welcomeScreen');
+    input.value = '';
+    errEl.style.display = 'none';
+    isUnlocked = true;
+    const restored = restoreState();
+    if (!restored) showScreen('welcomeScreen');
+    armIdleTimer();
   } else {
     errEl.style.display = 'block';
     input.value = '';
@@ -426,6 +500,7 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  saveState();
 }
 function setTopic(el) {
   document.getElementById('topicInput').value = el.textContent;
@@ -489,6 +564,7 @@ function addMessage(role, text) {
   wrap.appendChild(bubble);
   c.appendChild(wrap);
   bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  saveState();
 }
 function showTyping() {
   const c = document.getElementById('messages');
@@ -598,6 +674,7 @@ function renderSynthesis(text, headers) {
   const hasSections = sections.some(s => s.text.length > 20);
   if (!hasSections) {
     card.innerHTML = `<div class="syn-sec"><div class="syn-text">${text.trim()}</div></div>`;
+    saveState();
     return;
   }
   sections.slice(0,3).forEach(s => {
@@ -612,6 +689,7 @@ function renderSynthesis(text, headers) {
     document.getElementById('focusQ').textContent = focus.text;
     document.getElementById('focusCard').style.display = 'block';
   }
+  saveState();
 }
 function copyAll() {
   const card = document.getElementById('synthCard');
